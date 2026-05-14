@@ -342,7 +342,7 @@
     <div class="family-card">
       <div class="emoji">🧑‍💻</div>
       <div class="name">呱呱志豪</div>
-      <div class="role">AI工程师<br>杭州/上海</div>
+      <div class="role">AI工程师<br>杭州</div>
     </div>
     <div class="heart-connector">❤️</div>
     <div class="family-card">
@@ -366,7 +366,7 @@
   <div class="section-heading">但心很近</div>
   <div class="distance-wrapper">
     <div class="cities">
-      <span class="city-left">🏙️ 杭州/上海</span>
+      <span class="city-left">🏙️ 杭州</span>
       <span class="city-right">墨尔本 🌏</span>
     </div>
     <div class="distance-line">
@@ -385,24 +385,24 @@
   <div class="section-heading">五年点滴</div>
   <div class="timeline">
     <div class="timeline-item">
-      <div class="timeline-year">2020</div>
-      <div class="timeline-desc">成都初见，一眼万年。从那一刻起，世界变得不一样。</div>
-    </div>
-    <div class="timeline-item">
-      <div class="timeline-year">2021</div>
-      <div class="timeline-desc">有了寿喜烧，我们的呱呱家族多了一个小生命。</div>
+      <div class="timeline-year">2021.04.27 ❤️</div>
+      <div class="timeline-desc">成都初见。从那一刻起，世界变得不一样。我们的纪念日，从此定格在春天。</div>
     </div>
     <div class="timeline-item">
       <div class="timeline-year">2022</div>
-      <div class="timeline-desc">你去墨尔本追梦。异国的日子，每一个视频通话都是最期待的时刻。</div>
+      <div class="timeline-desc">你在悉尼读本科，我在杭州写代码。南半球的阳光和北半球的月光，隔着赤道说晚安。</div>
     </div>
     <div class="timeline-item">
       <div class="timeline-year">2023</div>
-      <div class="timeline-desc">各自努力，在不同的半球、不同的行业里闪闪发光。</div>
+      <div class="timeline-desc">你搬到了墨尔本读硕士。有了寿喜烧加入我们的呱呱家族，日子有了更多牵挂。</div>
     </div>
     <div class="timeline-item">
-      <div class="timeline-year">2025</div>
-      <div class="timeline-desc">五年了。1,825天。每一次说"想你"，每一次说"晚安"，都让我更确信——就是你了。</div>
+      <div class="timeline-year">2024</div>
+      <div class="timeline-desc">各自努力，在不同的半球和行业里闪闪发光。每一次视频，都是我一天里最好的时刻。</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">2025 · 第5年</div>
+      <div class="timeline-desc">1,825天。从成都到杭州，从悉尼到墨尔本，每一次说「想你」，都让我更确信——就是你了。</div>
     </div>
   </div>
 </section>
@@ -430,7 +430,7 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-const STAR_COUNT = 80;
+const STAR_COUNT = 100;
 for (let i = 0; i < STAR_COUNT; i++) {
   stars.push({
     x: Math.random() * canvas.width,
@@ -442,21 +442,103 @@ for (let i = 0; i < STAR_COUNT; i++) {
   });
 }
 
+// ===== SHOOTING STARS =====
+let shootingStars = [];
+function spawnShootingStar() {
+  shootingStars.push({
+    x: Math.random() * canvas.width * 0.8,
+    y: Math.random() * canvas.height * 0.3,
+    vx: 3 + Math.random() * 5,
+    vy: 1 + Math.random() * 3,
+    life: 1,
+    decay: 0.008 + Math.random() * 0.02,
+    len: 60 + Math.random() * 100
+  });
+}
+setInterval(() => { if (Math.random() < 0.3) spawnShootingStar(); }, 3000);
+spawnShootingStar();
+
+// ===== FLOATING PETALS =====
+let petals = [];
+const PETAL_COUNT = 25;
+for (let i = 0; i < PETAL_COUNT; i++) {
+  petals.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: 3 + Math.random() * 6,
+    vx: -0.3 + Math.random() * 0.6,
+    vy: 0.2 + Math.random() * 0.8,
+    rotation: Math.random() * Math.PI * 2,
+    rotSpeed: (Math.random() - 0.5) * 0.02,
+    opacity: 0.2 + Math.random() * 0.3,
+    color: Math.random() < 0.5 ? 'rgba(232,136,122,' : 'rgba(249,213,211,'
+  });
+}
+
 function drawStars() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const t = Date.now() * 0.001;
+  
+  // Draw petals
+  for (const p of petals) {
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rotation);
+    ctx.beginPath();
+    ctx.ellipse(0, 0, p.r, p.r * 0.6, 0, 0, Math.PI * 2);
+    ctx.fillStyle = p.color + p.opacity + ')';
+    ctx.fill();
+    ctx.restore();
+    p.x += p.vx;
+    p.y += p.vy;
+    p.rotation += p.rotSpeed;
+    if (p.y > canvas.height + 20) { p.y = -20; p.x = Math.random() * canvas.width; }
+    if (p.x > canvas.width + 20) { p.x = -20; }
+    if (p.x < -20) { p.x = canvas.width + 20; }
+  }
+  
+  // Draw shooting stars
+  for (let i = shootingStars.length - 1; i >= 0; i--) {
+    const ss = shootingStars[i];
+    ctx.beginPath();
+    ctx.moveTo(ss.x, ss.y);
+    const ex = ss.x - ss.vx * ss.len * ss.life;
+    const ey = ss.y - ss.vy * ss.len * ss.life;
+    ctx.lineTo(ex, ey);
+    const grad = ctx.createLinearGradient(ss.x, ss.y, ex, ey);
+    grad.addColorStop(0, `rgba(255,255,255,${ss.life})`);
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ss.x += ss.vx;
+    ss.y += ss.vy;
+    ss.life -= ss.decay;
+    if (ss.life <= 0) shootingStars.splice(i, 1);
+  }
+  
+  // Draw twinkling stars
   for (const s of stars) {
     const alpha = s.opacity + Math.sin(t * s.twinkleSpeed * 60 + s.twinkleOffset) * 0.2;
     ctx.beginPath();
     ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
     ctx.fillStyle = `rgba(212,165,116,${Math.max(0.15, alpha)})`;
     ctx.fill();
+    // Glow for brighter stars
+    if (s.r > 1.2 && alpha > 0.5) {
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r * 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(212,165,116,${Math.max(0, alpha * 0.15)})`;
+      ctx.fill();
+    }
   }
+  
   // Slow drift
   for (const s of stars) {
     s.y -= 0.08;
     if (s.y < -5) { s.y = canvas.height + 5; s.x = Math.random() * canvas.width; }
   }
+  
   requestAnimationFrame(drawStars);
 }
 drawStars();
